@@ -1,0 +1,31 @@
+# Automatically publish the mod to Modrinth when a new version tag is pushed.
+name: publish
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v2
+
+      - name: setup jdk
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: publish mods
+        run: ./gradlew publishMods -Dorg.gradle.java.home="$JAVA_HOME"
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CHANGELOG: "Release version ${{ github.ref_name }}"

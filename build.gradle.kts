@@ -8,6 +8,7 @@ plugins {
 	id("org.jetbrains.kotlin.jvm") version "2.4.0" apply false
 	id("com.gradleup.shadow") version "8.3.6" apply false
 	id("net.neoforged.moddev") version "2.0.141" apply false
+	id("me.modmuss50.mod-publish-plugin") version "2.0.0" apply false
 }
 
 version = providers.gradleProperty("mod_version").get()

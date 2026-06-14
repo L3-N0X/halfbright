@@ -2,6 +2,7 @@ plugins {
 	id("net.neoforged.moddev")
 	id("org.jetbrains.kotlin.jvm")
 	id("com.gradleup.shadow")
+	id("me.modmuss50.mod-publish-plugin")
 }
 
 evaluationDependsOn(":common")
@@ -61,4 +62,17 @@ tasks.shadowJar {
 	exclude("architectury.common.json")
 	configurations = listOf(shadowBundle)
 	archiveClassifier.set("")
+}
+
+publishMods {
+	file.set(tasks.shadowJar.flatMap { it.archiveFile })
+	changelog.set(providers.environmentVariable("CHANGELOG").orElse("No changelog provided."))
+	type.set(me.modmuss50.mpp.ReleaseType.STABLE)
+	modLoaders.add("neoforge")
+
+	modrinth {
+		projectId.set(providers.gradleProperty("modrinth_project_id").orElse("placeholder"))
+		accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
+		minecraftVersions.add(providers.gradleProperty("minecraft_version").get())
+	}
 }
