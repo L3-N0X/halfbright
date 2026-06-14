@@ -25,6 +25,8 @@ dependencies {
 
 	implementation(project(":common"))
 	add("shadowBundle", project(":common"))
+
+	implementation("net.caffeinemc:sodium-fabric-api:0.8.12+mc26.1.2")
 }
 
 tasks.processResources {

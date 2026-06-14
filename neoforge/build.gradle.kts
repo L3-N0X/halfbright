@@ -4,6 +4,8 @@ plugins {
 	id("com.gradleup.shadow")
 }
 
+evaluationDependsOn(":common")
+
 neoForge {
 	version = providers.gradleProperty("neoforge_version").get()
 
@@ -20,6 +22,7 @@ neoForge {
 	mods {
 		create("halfbright") {
 			sourceSet(sourceSets.main.get())
+			sourceSet(project(":common").extensions.getByType<org.gradle.api.tasks.SourceSetContainer>().getByName("main"))
 		}
 	}
 }
@@ -29,6 +32,8 @@ val shadowBundle by configurations.creating
 dependencies {
 	implementation(project(":common"))
 	add("shadowBundle", project(":common"))
+
+	implementation("net.caffeinemc:sodium-neoforge-api:0.8.12+mc26.1.2")
 }
 
 tasks.processResources {

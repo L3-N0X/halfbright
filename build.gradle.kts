@@ -18,6 +18,9 @@ architectury {
 }
 
 subprojects {
+	version = rootProject.version
+	group = rootProject.group
+
 	repositories {
 		mavenCentral()
 		maven {
@@ -31,6 +34,10 @@ subprojects {
 		maven {
 			name = "NeoForge"
 			url = uri("https://maven.neoforged.net/releases/")
+		}
+		maven {
+			name = "CaffeineMC"
+			url = uri("https://maven.caffeinemc.net/releases")
 		}
 	}
 

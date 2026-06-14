@@ -3,15 +3,14 @@
 	"id": "halfbright",
 	"version": "${version}",
 	"name": "halfbright",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Halfbright allows Minecraft to be brighter without looking worse",
 	"authors": [
-		"Me!"
+		"L3-N0X"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/L3-N0X/halfbright"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/halfbright/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -20,6 +19,9 @@
 				"value": "de.lenox.fabric.HalfbrightFabric",
 				"adapter": "kotlin"
 			}
+		],
+		"sodium:config_api_user": [
+			"de.lenox.fabric.HalfbrightSodiumConfig"
 		]
 	},
 	"mixins": [

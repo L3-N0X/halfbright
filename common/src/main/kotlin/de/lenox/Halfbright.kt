@@ -8,5 +8,6 @@ object Halfbright {
 
 	fun init() {
 		LOGGER.info("Hello from Architectury Common!")
+		HalfbrightConfig.load()
 	}
 }
