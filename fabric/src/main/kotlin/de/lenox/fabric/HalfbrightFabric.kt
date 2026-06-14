@@ -9,6 +9,10 @@ object HalfbrightFabric : ModInitializer {
 		Halfbright.init()
 		Halfbright.LOGGER.info("Hello from Architectury Fabric!")
 
+		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.toggleKey)
+		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.increaseKey)
+		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.decreaseKey)
+
 		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
 			HalfbrightCommand.register(dispatcher)
 		}
