@@ -2,7 +2,7 @@
 	"schemaVersion": 1,
 	"id": "halfbright",
 	"version": "${version}",
-	"name": "halfbright",
+	"name": "Halfbright",
 	"description": "Halfbright allows Minecraft to be brighter without looking worse",
 	"authors": [
 		"L3-N0X"
@@ -11,7 +11,7 @@
 		"sources": "https://github.com/L3-N0X/halfbright"
 	},
 	"license": "MIT",
-	"icon": "icon.png",
+	"icon": "assets/halfbright/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

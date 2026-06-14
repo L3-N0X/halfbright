@@ -13,7 +13,7 @@ class HalfbrightSodiumConfig : ConfigEntryPoint {
         builder.registerOwnModOptions()
             .setIcon(Identifier.fromNamespaceAndPath("halfbright", "textures/sodium_icon.png"))
             .addPage(builder.createOptionPage()
-                .setName(Component.literal("Halfbright"))
+                .setName(Component.literal("General"))
                 .addOptionGroup(builder.createOptionGroup()
                     .addOption(builder.createBooleanOption(Identifier.fromNamespaceAndPath("halfbright", "enabled"))
                         .setName(Component.literal("Halfbright Enabled"))

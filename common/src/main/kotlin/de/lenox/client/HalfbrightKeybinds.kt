@@ -14,20 +14,23 @@ object HalfbrightKeybinds {
         "key.halfbright.toggle",
         InputConstants.Type.KEYSYM,
         GLFW.GLFW_KEY_H,
-        HALFBRIGHT_CATEGORY
+        HALFBRIGHT_CATEGORY,
+        1
     )
 
     val increaseKey = KeyMapping(
         "key.halfbright.increase",
         InputConstants.Type.KEYSYM,
         GLFW.GLFW_KEY_UP,
-        HALFBRIGHT_CATEGORY
+        HALFBRIGHT_CATEGORY,
+        2
     )
 
     val decreaseKey = KeyMapping(
         "key.halfbright.decrease",
         InputConstants.Type.KEYSYM,
         GLFW.GLFW_KEY_DOWN,
-        HALFBRIGHT_CATEGORY
+        HALFBRIGHT_CATEGORY,
+        3
     )
 }

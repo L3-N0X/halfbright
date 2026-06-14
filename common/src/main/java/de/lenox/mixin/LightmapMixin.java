@@ -25,10 +25,14 @@ public class LightmapMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRender(LightmapRenderState renderState, CallbackInfo ci) {
+        if (!HalfbrightConfig.INSTANCE.getEnabled()) {
+            return;
+        }
+
         if (renderState.needsUpdate) {
             CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
 
-            float brightness = HalfbrightConfig.INSTANCE.getEnabled() ? 0.5f : renderState.brightness;
+            float brightness = 0.5f;
 
             // 1. Maintain UBO update so other subsystems stay happy
             try (GpuBuffer.MappedView view = commandEncoder.mapBuffer(this.ubo.currentBuffer(), false, true)) {

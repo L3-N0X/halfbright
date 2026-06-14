@@ -5,7 +5,7 @@ license = "MIT"
 [[mods]]
 modId = "halfbright"
 version = "${version}"
-displayName = "halfbright"
+displayName = "Halfbright"
 authors = "L3-N0X"
 description = "Halfbright allows Minecraft to be brighter without looking worse"
 

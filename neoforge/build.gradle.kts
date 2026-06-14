@@ -41,7 +41,7 @@ dependencies {
 	implementation(project(":common"))
 	add("shadowBundle", project(":common"))
 
-	implementation("net.caffeinemc:sodium-neoforge-api:0.8.12+mc26.1.2")
+	compileOnly("net.caffeinemc:sodium-neoforge-api:0.8.12+mc26.1.2")
 }
 
 tasks.processResources {
