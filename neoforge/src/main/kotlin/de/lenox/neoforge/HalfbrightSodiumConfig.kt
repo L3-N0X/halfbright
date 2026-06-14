@@ -25,6 +25,18 @@ class HalfbrightSodiumConfig : ConfigEntryPoint {
                         )
                         .setDefaultValue(false)
                     )
+                    .addOption(builder.createIntegerOption(Identifier.fromNamespaceAndPath("halfbright", "min_light_level"))
+                        .setName(Component.literal("Minimum Light Level"))
+                        .setTooltip(Component.literal("The minimum light level to scale from (0.0 to 15.0)."))
+                        .setStorageHandler { HalfbrightConfig.save() }
+                        .setBinding(
+                            { value -> HalfbrightConfig.minLightLevel = value / 10.0f },
+                            { (HalfbrightConfig.minLightLevel * 10).toInt() }
+                        )
+                        .setRange(0, 150, 5)
+                        .setValueFormatter { value -> Component.literal((value / 10.0).toString()) }
+                        .setDefaultValue(35)
+                    )
                 )
             )
     }

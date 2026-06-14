@@ -7,6 +7,9 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 
+import com.mojang.brigadier.arguments.FloatArgumentType.floatArg
+import com.mojang.brigadier.arguments.FloatArgumentType.getFloat
+
 object HalfbrightCommand {
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
@@ -24,12 +27,20 @@ object HalfbrightCommand {
                     Commands.literal("disable")
                         .executes { setEnabled(it, false) }
                 )
+                .then(
+                    Commands.literal("level")
+                        .then(
+                            Commands.argument("value", floatArg(0.0f, 15.0f))
+                                .executes { setLevel(it) }
+                        )
+                )
         )
     }
 
     private fun query(ctx: CommandContext<CommandSourceStack>): Int {
         val state = HalfbrightConfig.enabled
-        ctx.source.sendSystemMessage(Component.literal("Halfbright is currently ${if (state) "enabled" else "disabled"}"))
+        val level = HalfbrightConfig.minLightLevel
+        ctx.source.sendSystemMessage(Component.literal("Halfbright is currently ${if (state) "enabled" else "disabled"} (minimum light level: $level)"))
         return 1
     }
 
@@ -45,6 +56,14 @@ object HalfbrightCommand {
         HalfbrightConfig.enabled = value
         HalfbrightConfig.save()
         ctx.source.sendSystemMessage(Component.literal("Halfbright has been ${if (value) "enabled" else "disabled"}"))
+        return 1
+    }
+
+    private fun setLevel(ctx: CommandContext<CommandSourceStack>): Int {
+        val value = getFloat(ctx, "value")
+        HalfbrightConfig.minLightLevel = value
+        HalfbrightConfig.save()
+        ctx.source.sendSystemMessage(Component.literal("Halfbright minimum light level has been set to $value"))
         return 1
     }
 }

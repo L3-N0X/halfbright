@@ -3,7 +3,8 @@
 	"package": "de.lenox.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
-		"ExampleMixin"
+		"ExampleMixin",
+		"LightmapRenderStateExtractorMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -9,6 +9,7 @@ object HalfbrightConfig {
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     var enabled: Boolean = false
+    var minLightLevel: Float = 6.0f
 
     fun load() {
         try {
@@ -17,6 +18,7 @@ object HalfbrightConfig {
                     val data = gson.fromJson(reader, ConfigData::class.java)
                     if (data != null) {
                         enabled = data.enabled
+                        minLightLevel = data.minLightLevel
                     }
                 }
             } else {
@@ -34,12 +36,12 @@ object HalfbrightConfig {
                 Files.createDirectories(parent)
             }
             Files.newBufferedWriter(path).use { writer ->
-                gson.toJson(ConfigData(enabled), writer)
+                gson.toJson(ConfigData(enabled, minLightLevel), writer)
             }
         } catch (e: Exception) {
             Halfbright.LOGGER.error("Failed to save halfbright config", e)
         }
     }
 
-    private data class ConfigData(val enabled: Boolean)
+    private data class ConfigData(val enabled: Boolean, val minLightLevel: Float = 6.0f)
 }
