@@ -8,6 +8,7 @@ version = "${version}"
 displayName = "Halfbright"
 authors = "L3-N0X"
 description = "Halfbright allows Minecraft to be brighter without looking worse"
+logoFile = "neoforge_icon.png"
 
 [[mixins]]
 config = "halfbright.mixins.json"
