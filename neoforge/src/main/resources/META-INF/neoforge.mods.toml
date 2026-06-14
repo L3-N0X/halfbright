@@ -1,0 +1,13 @@
+modLoader = "javafml"
+loaderVersion = "[26,)"
+license = "CC0-1.0"
+
+[[mods]]
+modId = "halfbright"
+version = "${version}"
+displayName = "halfbright"
+authors = "Me!"
+description = "This is an example description! Tell everyone what your mod is about!"
+
+[[mixins]]
+config = "halfbright.mixins.json"
