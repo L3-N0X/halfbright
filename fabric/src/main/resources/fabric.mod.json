@@ -11,7 +11,7 @@
 		"sources": "https://github.com/L3-N0X/halfbright"
 	},
 	"license": "MIT",
-	"icon": "assets/halfbright/icon.png",
+	"icon": "icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

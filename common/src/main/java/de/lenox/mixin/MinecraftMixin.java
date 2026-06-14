@@ -1,6 +1,7 @@
 package de.lenox.mixin;
 
 import de.lenox.client.HalfbrightKeybinds;
+import de.lenox.client.HalfbrightHudRenderer;
 import de.lenox.HalfbrightConfig;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +17,7 @@ public class MinecraftMixin {
             boolean newState = !HalfbrightConfig.INSTANCE.getEnabled();
             HalfbrightConfig.INSTANCE.setEnabled(newState);
             HalfbrightConfig.INSTANCE.save();
+            HalfbrightHudRenderer.INSTANCE.show();
         }
         
         while (HalfbrightKeybinds.INSTANCE.getIncreaseKey().consumeClick()) {
@@ -23,6 +25,7 @@ public class MinecraftMixin {
             float next = Math.min(15.0f, current + 0.5f);
             HalfbrightConfig.INSTANCE.setMinLightLevel(next);
             HalfbrightConfig.INSTANCE.save();
+            HalfbrightHudRenderer.INSTANCE.show();
         }
         
         while (HalfbrightKeybinds.INSTANCE.getDecreaseKey().consumeClick()) {
@@ -30,6 +33,7 @@ public class MinecraftMixin {
             float next = Math.max(0.0f, current - 0.5f);
             HalfbrightConfig.INSTANCE.setMinLightLevel(next);
             HalfbrightConfig.INSTANCE.save();
+            HalfbrightHudRenderer.INSTANCE.show();
         }
     }
 }

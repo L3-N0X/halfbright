@@ -12,6 +12,14 @@ architectury {
 
 val shadowBundle by configurations.creating
 
+sourceSets {
+	main {
+		resources {
+			srcDir("../common/src/main/resources")
+		}
+	}
+}
+
 dependencies {
 	val minecraftVersion = providers.gradleProperty("minecraft_version").get()
 	val loaderVersion = providers.gradleProperty("loader_version").get()

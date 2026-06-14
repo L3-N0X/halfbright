@@ -27,6 +27,14 @@ neoForge {
 	}
 }
 
+sourceSets {
+	main {
+		resources {
+			srcDir("../common/src/main/resources")
+		}
+	}
+}
+
 val shadowBundle by configurations.creating
 
 dependencies {

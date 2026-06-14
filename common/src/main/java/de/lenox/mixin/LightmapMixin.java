@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.state.LightmapRenderState;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,6 +28,8 @@ public class LightmapMixin {
         if (renderState.needsUpdate) {
             CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
 
+            float brightness = HalfbrightConfig.INSTANCE.getEnabled() ? 0.5f : renderState.brightness;
+
             // 1. Maintain UBO update so other subsystems stay happy
             try (GpuBuffer.MappedView view = commandEncoder.mapBuffer(this.ubo.currentBuffer(), false, true)) {
                 Std140Builder.intoBuffer(view.data())
@@ -35,7 +38,7 @@ public class LightmapMixin {
                     .putFloat(renderState.nightVisionEffectIntensity)
                     .putFloat(renderState.darknessEffectScale)
                     .putFloat(renderState.bossOverlayWorldDarkening)
-                    .putFloat(renderState.brightness)
+                    .putFloat(brightness)
                     .putVec3(renderState.blockLightTint)
                     .putVec3(renderState.skyLightColor)
                     .putVec3(renderState.ambientColor)
@@ -52,14 +55,14 @@ public class LightmapMixin {
                 if (HalfbrightConfig.INSTANCE.getEnabled()) {
                     skyLevel = minLevel + (1.0f - minLevel) * skyLevel;
                 }
-                float skyBrightness = getBrightness(skyLevel) * renderState.skyFactor;
+                float skyBrightness = halfbright$getBrightness(skyLevel) * renderState.skyFactor;
 
                 for (int x = 0; x < 16; x++) {
                     float blockLevel = x / 15.0f;
                     if (HalfbrightConfig.INSTANCE.getEnabled()) {
                         blockLevel = minLevel + (1.0f - minLevel) * blockLevel;
                     }
-                    float blockBrightness = getBrightness(blockLevel) * renderState.blockFactor;
+                    float blockBrightness = halfbright$getBrightness(blockLevel) * renderState.blockFactor;
 
                     // Calculate ambient color with or without night vision
                     float nightVisionR = renderState.nightVisionColor.x() * renderState.nightVisionEffectIntensity;
@@ -76,19 +79,19 @@ public class LightmapMixin {
                     b += renderState.skyLightColor.z() * skyBrightness;
 
                     // Add block light
-                    float mixFactor = 0.9f * parabolicMixFactor(blockLevel);
-                    float blockLightR = lerp(renderState.blockLightTint.x(), 1.0f, mixFactor);
-                    float blockLightG = lerp(renderState.blockLightTint.y(), 1.0f, mixFactor);
-                    float blockLightB = lerp(renderState.blockLightTint.z(), 1.0f, mixFactor);
+                    float mixFactor = 0.9f * halfbright$parabolicMixFactor(blockLevel);
+                    float blockLightR = halfbright$lerp(renderState.blockLightTint.x(), 1.0f, mixFactor);
+                    float blockLightG = halfbright$lerp(renderState.blockLightTint.y(), 1.0f, mixFactor);
+                    float blockLightB = halfbright$lerp(renderState.blockLightTint.z(), 1.0f, mixFactor);
 
                     r += blockLightR * blockBrightness;
                     g += blockLightG * blockBrightness;
                     b += blockLightB * blockBrightness;
 
                     // Apply boss overlay darkening effect
-                    r = lerp(r, r * 0.7f, renderState.bossOverlayWorldDarkening);
-                    g = lerp(g, g * 0.6f, renderState.bossOverlayWorldDarkening);
-                    b = lerp(b, b * 0.6f, renderState.bossOverlayWorldDarkening);
+                    r = halfbright$lerp(r, r * 0.7f, renderState.bossOverlayWorldDarkening);
+                    g = halfbright$lerp(g, g * 0.6f, renderState.bossOverlayWorldDarkening);
+                    b = halfbright$lerp(b, b * 0.6f, renderState.bossOverlayWorldDarkening);
 
                     // Apply darkness effect scale
                     r -= renderState.darknessEffectScale;
@@ -96,9 +99,9 @@ public class LightmapMixin {
                     b -= renderState.darknessEffectScale;
 
                     // Apply brightness option (gamma)
-                    r = clamp(r, 0.0f, 1.0f);
-                    g = clamp(g, 0.0f, 1.0f);
-                    b = clamp(b, 0.0f, 1.0f);
+                    r = Math.clamp(r, 0.0f, 1.0f);
+                    g = Math.clamp(g, 0.0f, 1.0f);
+                    b = Math.clamp(b, 0.0f, 1.0f);
 
                     float maxComponent = Math.max(Math.max(r, g), b);
                     float notGammaR = r;
@@ -113,17 +116,17 @@ public class LightmapMixin {
                         notGammaB = b * scale;
                     }
 
-                    r = lerp(r, notGammaR, renderState.brightness);
-                    g = lerp(g, notGammaG, renderState.brightness);
-                    b = lerp(b, notGammaB, renderState.brightness);
+                    r = halfbright$lerp(r, notGammaR, brightness);
+                    g = halfbright$lerp(g, notGammaG, brightness);
+                    b = halfbright$lerp(b, notGammaB, brightness);
 
-                    r = clamp(r, 0.0f, 1.0f);
-                    g = clamp(g, 0.0f, 1.0f);
-                    b = clamp(b, 0.0f, 1.0f);
+                    r = Math.clamp(r, 0.0f, 1.0f);
+                    g = Math.clamp(g, 0.0f, 1.0f);
+                    b = Math.clamp(b, 0.0f, 1.0f);
 
-                    int ri = Math.max(0, Math.min(255, Math.round(r * 255.0f)));
-                    int gi = Math.max(0, Math.min(255, Math.round(g * 255.0f)));
-                    int bi = Math.max(0, Math.min(255, Math.round(b * 255.0f)));
+                    int ri = Math.clamp(Math.round(r * 255.0f), 0, 255);
+                    int gi = Math.clamp(Math.round(g * 255.0f), 0, 255);
+                    int bi = Math.clamp(Math.round(b * 255.0f), 0, 255);
 
                     int pixelARGB = (255 << 24) | (ri << 16) | (gi << 8) | bi;
                     image.setPixel(x, y, pixelARGB);
@@ -141,20 +144,19 @@ public class LightmapMixin {
         }
     }
 
-    private static float getBrightness(float level) {
+    @Unique
+    private static float halfbright$getBrightness(float level) {
         return level / (4.0f - 3.0f * level);
     }
 
-    private static float parabolicMixFactor(float level) {
+    @Unique
+    private static float halfbright$parabolicMixFactor(float level) {
         float term = 2.0f * level - 1.0f;
         return term * term;
     }
 
-    private static float lerp(float a, float b, float t) {
+    @Unique
+    private static float halfbright$lerp(float a, float b, float t) {
         return a + (b - a) * t;
-    }
-
-    private static float clamp(float value, float min, float max) {
-        return Math.max(min, Math.min(max, value));
     }
 }

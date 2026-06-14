@@ -11,7 +11,7 @@ import net.minecraft.resources.Identifier
 class HalfbrightSodiumConfig : ConfigEntryPoint {
     override fun registerConfigLate(builder: ConfigBuilder) {
         builder.registerOwnModOptions()
-            .setNonTintedIcon(Identifier.fromNamespaceAndPath("halfbright", "icon.png"))
+            .setIcon(Identifier.fromNamespaceAndPath("halfbright", "textures/sodium_icon.png"))
             .addPage(builder.createOptionPage()
                 .setName(Component.literal("Halfbright"))
                 .addOptionGroup(builder.createOptionGroup()
