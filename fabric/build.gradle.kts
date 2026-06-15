@@ -47,6 +47,11 @@ tasks.processResources {
 	}
 }
 
+tasks.withType<org.gradle.api.tasks.bundling.AbstractArchiveTask>().configureEach {
+	archiveBaseName.set("${rootProject.name}-${project.name}")
+	archiveVersion.set("v${project.version}+${providers.gradleProperty("minecraft_version").get()}")
+}
+
 tasks.jar {
 	archiveClassifier.set("thin")
 }
