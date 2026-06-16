@@ -8,7 +8,7 @@ object HalfbrightConfig {
     private val path: Path = Path.of("config", "halfbright.json")
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
-    var enabled: Boolean = false
+    var enabled: Boolean = true
     var minLightLevel: Float = 6.5f
 
     fun load() {
@@ -43,5 +43,5 @@ object HalfbrightConfig {
         }
     }
 
-    private data class ConfigData(val enabled: Boolean, val minLightLevel: Float = 6.5f)
+    private data class ConfigData(val enabled: Boolean = true, val minLightLevel: Float = 6.5f)
 }
