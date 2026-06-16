@@ -1,6 +1,6 @@
 package de.lenox.mixin;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.CommandEncoder;
@@ -35,7 +35,7 @@ public class LightmapMixin {
             float brightness = 0.5f;
 
             // 1. Maintain UBO update so other subsystems stay happy
-            try (GpuBuffer.MappedView view = commandEncoder.mapBuffer(this.ubo.currentBuffer(), false, true)) {
+            try (GpuBufferSlice.MappedView view = this.ubo.currentBuffer().map(false, true)) {
                 Std140Builder.intoBuffer(view.data())
                     .putFloat(renderState.skyFactor)
                     .putFloat(renderState.blockFactor)
