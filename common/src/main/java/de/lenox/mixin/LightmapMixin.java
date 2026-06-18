@@ -49,7 +49,9 @@ public class LightmapMixin {
                     .putVec3(renderState.nightVisionColor);
             }
 
-            // 2. Perform CPU-based lightmap rendering
+            // Perform CPU-based lightmap rendering
+            // (If you are reading this and you know how a way to optimize this
+            // or make it run faster on the gpu, please contact me!)
             NativeImage image = new NativeImage(16, 16, false);
 
             float targetBrightness = 0.0f;
@@ -83,34 +85,56 @@ public class LightmapMixin {
                     g += renderState.skyLightColor.y() * skyBrightness;
                     b += renderState.skyLightColor.z() * skyBrightness;
 
-                    // === 1. APPLY FLOOR BOOST TO THE ENVIRONMENT ONLY ===
-                    // This guarantees the base stone/night sky never dips below your slider setting
+                    // Apply floor boost to the environment only
                     if (HalfbrightConfig.INSTANCE.getEnabled()) {
                         // Calculate perceived luminance
                         float currentEnvBrightness = 0.2126f * r + 0.7152f * g + 0.0722f * b;
-
-                        // Clamp to ensure we don't accidentally invert anything if a value exceeds 1.0
                         currentEnvBrightness = Math.clamp(currentEnvBrightness, 0.0f, 1.0f);
 
-                        // Scale the boost inversely to the natural light.
-                        // Pitch black gets 100% of the target. Daylight gets 0%.
+                        // Proportional boost to maintain contrast
                         float boost = targetBrightness * (1.0f - currentEnvBrightness);
 
                         if (boost > 0.0f) {
-                            r += boost;
-                            g += boost;
-                            b += boost;
+                            // Extract the current ambient sky color
+                            float skyR = renderState.skyLightColor.x();
+                            float skyG = renderState.skyLightColor.y();
+                            float skyB = renderState.skyLightColor.z();
+                            float maxSky = Math.max(skyR, Math.max(skyG, skyB));
+
+                            float tintR = 1.0f, tintG = 1.0f, tintB = 1.0f;
+
+                            if (maxSky > 0.0f) {
+                                // Mix the pure sky color with white (60% mix).
+                                // This prevents the shadows from becoming TOO blue, keeping them natural.
+                                tintR = halfbright$lerp(1.0f, skyR / maxSky, 0.6f);
+                                tintG = halfbright$lerp(1.0f, skyG / maxSky, 0.6f);
+                                tintB = halfbright$lerp(1.0f, skyB / maxSky, 0.6f);
+                            }
+
+                            // Normalize the tint using perceptual luminance.
+                            // This guarantees that even if the tint is blue, it adds the EXACT amount of brightness our slider demands.
+                            float tintLum = 0.2126f * tintR + 0.7152f * tintG + 0.0722f * tintB;
+                            if (tintLum > 0.0f) {
+                                tintR /= tintLum;
+                                tintG /= tintLum;
+                                tintB /= tintLum;
+                            }
+
+                            // Apply the color-corrected boost
+                            r += boost * tintR;
+                            g += boost * tintG;
+                            b += boost * tintB;
                         }
                     }
 
-                    // === 2. NOW ADD THE BLOCK LIGHT ON TOP ===
+                    // Add the block light tint on top.
                     // Because the floor is already locked in, the block light strictly adds brightness.
                     float tintR = renderState.blockLightTint.x();
                     float tintG = renderState.blockLightTint.y();
                     float tintB = renderState.blockLightTint.z();
 
                     if (HalfbrightConfig.INSTANCE.getEnabled()) {
-                        // Keep the beautiful desaturation from the last iteration!
+                        // Apply a desaturation effect to the block light tint to remove some of the yellowish tint.
                         tintR = halfbright$lerp(tintR, 1.0f, targetBrightness);
                         tintG = halfbright$lerp(tintG, 1.0f, targetBrightness);
                         tintB = halfbright$lerp(tintB, 1.0f, targetBrightness);

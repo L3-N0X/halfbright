@@ -9,7 +9,7 @@ object HalfbrightConfig {
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     var enabled: Boolean = true
-    var minLightLevel: Float = 6.5f
+    var minLightLevel: Float = 5.0f
 
     fun load() {
         try {
@@ -43,5 +43,5 @@ object HalfbrightConfig {
         }
     }
 
-    private data class ConfigData(val enabled: Boolean = true, val minLightLevel: Float = 6.5f)
+    private data class ConfigData(val enabled: Boolean = true, val minLightLevel: Float = 5.0f)
 }
