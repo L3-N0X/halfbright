@@ -7,7 +7,6 @@ import net.fabricmc.api.ModInitializer
 object HalfbrightFabric : ModInitializer {
 	override fun onInitialize() {
 		Halfbright.init()
-		Halfbright.LOGGER.info("Hello from Architectury Fabric!")
 
 		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.toggleKey)
 		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.increaseKey)
