@@ -12,7 +12,7 @@ Traditional fullbright mods often attempt to raise the game's gamma levels to ex
 Instead of raising the global gamma, **Halfbright scales the lightmap directly on the CPU**.
 
 1. **Lightmap Scaling:** The mod captures the 16x16 lightmap texture on the CPU.
-2. **Dynamic Range Remapping:** It remaps the lower bounds of the light levels to start at a configurable minimum value (defaults to `6.5`).
+2. **Dynamic Range Remapping:** It remaps the lower bounds of the light levels to start at a configurable minimum value (defaults to `5.0`).
 3. **Curve Preservation:** By keeping all 16 steps in the lightmap and scaling them smoothly, the mod preserves Minecraft's smooth lighting curve. Shadows and caves remain visually pleasing, and nights stay dark and atmospheric while ensuring you can still clearly see your surroundings.
 4. **Universal Compatibility:** By writing directly to the lightmap texture before uploading to the GPU, it works seamlessly with both vanilla rendering and custom rendering engines like **Sodium** on both **Fabric** and **NeoForge**.
 
