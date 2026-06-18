@@ -51,8 +51,13 @@ public class LightmapMixin {
 
             // 2. Perform CPU-based lightmap rendering
             NativeImage image = new NativeImage(16, 16, false);
-            
-            float minLevel = HalfbrightConfig.INSTANCE.getEnabled() ? HalfbrightConfig.INSTANCE.getMinLightLevel() / 15.0f : 0.0f;
+
+            float targetBrightness = 0.0f;
+            if (HalfbrightConfig.INSTANCE.getEnabled()) {
+                float normalizedLevel = HalfbrightConfig.INSTANCE.getMinLightLevel() / 15.0f;
+                float quadraticCurve = normalizedLevel * normalizedLevel;
+                targetBrightness = halfbright$lerp(normalizedLevel, quadraticCurve, 0.5f);
+            }
 
             for (int y = 0; y < 16; y++) {
                 // Keep vanilla unextended sky level logic
@@ -73,40 +78,52 @@ public class LightmapMixin {
                     float g = Math.max(renderState.ambientColor.y(), nightVisionG);
                     float b = Math.max(renderState.ambientColor.z(), nightVisionB);
 
-                    // Add vanilla sky light
+                    // Add vanilla sky light (Environment Base)
                     r += renderState.skyLightColor.x() * skyBrightness;
                     g += renderState.skyLightColor.y() * skyBrightness;
                     b += renderState.skyLightColor.z() * skyBrightness;
 
-                    // Add vanilla block light
-                    float mixFactor = 0.9f * halfbright$parabolicMixFactor(blockLevel);
-                    float blockLightR = halfbright$lerp(renderState.blockLightTint.x(), 1.0f, mixFactor);
-                    float blockLightG = halfbright$lerp(renderState.blockLightTint.y(), 1.0f, mixFactor);
-                    float blockLightB = halfbright$lerp(renderState.blockLightTint.z(), 1.0f, mixFactor);
-
-                    r += blockLightR * blockBrightness;
-                    g += blockLightG * blockBrightness;
-                    b += blockLightB * blockBrightness;
-
+                    // === 1. APPLY FLOOR BOOST TO THE ENVIRONMENT ONLY ===
+                    // This guarantees the base stone/night sky never dips below your slider setting
                     if (HalfbrightConfig.INSTANCE.getEnabled()) {
-                        // Normalize the slider value from 0.0 to 1.0
-                        float normalizedLevel = HalfbrightConfig.INSTANCE.getMinLightLevel() / 15.0f;
+                        // Calculate perceived luminance
+                        float currentEnvBrightness = 0.2126f * r + 0.7152f * g + 0.0722f * b;
 
-                        // Blend 50% Linear with 50% Quadratic for the perfect smooth curve
-                        float quadraticCurve = normalizedLevel * normalizedLevel;
-                        float targetBrightness = halfbright$lerp(normalizedLevel, quadraticCurve, 0.5f); // 0.5f is the mix factor
+                        // Clamp to ensure we don't accidentally invert anything if a value exceeds 1.0
+                        currentEnvBrightness = Math.clamp(currentEnvBrightness, 0.0f, 1.0f);
 
-                        // Find the strongest channel to see how bright the pixel currently is
-                        float currentBrightness = Math.max(r, Math.max(g, b));
+                        // Scale the boost inversely to the natural light.
+                        // Pitch black gets 100% of the target. Daylight gets 0%.
+                        float boost = targetBrightness * (1.0f - currentEnvBrightness);
 
-                        // Apply a uniform addition to preserve the color ratios (keeps nights blue!)
-                        if (currentBrightness < targetBrightness) {
-                            float boost = targetBrightness - currentBrightness;
+                        if (boost > 0.0f) {
                             r += boost;
                             g += boost;
                             b += boost;
                         }
                     }
+
+                    // === 2. NOW ADD THE BLOCK LIGHT ON TOP ===
+                    // Because the floor is already locked in, the block light strictly adds brightness.
+                    float tintR = renderState.blockLightTint.x();
+                    float tintG = renderState.blockLightTint.y();
+                    float tintB = renderState.blockLightTint.z();
+
+                    if (HalfbrightConfig.INSTANCE.getEnabled()) {
+                        // Keep the beautiful desaturation from the last iteration!
+                        tintR = halfbright$lerp(tintR, 1.0f, targetBrightness);
+                        tintG = halfbright$lerp(tintG, 1.0f, targetBrightness);
+                        tintB = halfbright$lerp(tintB, 1.0f, targetBrightness);
+                    }
+
+                    float mixFactor = 0.9f * halfbright$parabolicMixFactor(blockLevel);
+                    float blockLightR = halfbright$lerp(tintR, 1.0f, mixFactor);
+                    float blockLightG = halfbright$lerp(tintG, 1.0f, mixFactor);
+                    float blockLightB = halfbright$lerp(tintB, 1.0f, mixFactor);
+
+                    r += blockLightR * blockBrightness;
+                    g += blockLightG * blockBrightness;
+                    b += blockLightB * blockBrightness;
 
                     // Apply boss overlay darkening effect
                     r = halfbright$lerp(r, r * 0.7f, renderState.bossOverlayWorldDarkening);
