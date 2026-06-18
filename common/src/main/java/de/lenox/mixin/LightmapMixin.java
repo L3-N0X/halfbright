@@ -88,15 +88,18 @@ public class LightmapMixin {
                     g += blockLightG * blockBrightness;
                     b += blockLightB * blockBrightness;
 
-                    // === FIX: Linear Slider combined with Uniform Color-Preserving Boost ===
                     if (HalfbrightConfig.INSTANCE.getEnabled()) {
-                        // 1. Map the slider linearly to eliminate the dead-zone
-                        float targetBrightness = HalfbrightConfig.INSTANCE.getMinLightLevel() / 15.0f;
+                        // Normalize the slider value from 0.0 to 1.0
+                        float normalizedLevel = HalfbrightConfig.INSTANCE.getMinLightLevel() / 15.0f;
 
-                        // 2. Find the strongest channel to see how bright the pixel currently is
+                        // Blend 50% Linear with 50% Quadratic for the perfect smooth curve
+                        float quadraticCurve = normalizedLevel * normalizedLevel;
+                        float targetBrightness = halfbright$lerp(normalizedLevel, quadraticCurve, 0.5f); // 0.5f is the mix factor
+
+                        // Find the strongest channel to see how bright the pixel currently is
                         float currentBrightness = Math.max(r, Math.max(g, b));
 
-                        // 3. Apply a uniform addition to preserve the color ratios (keeps nights blue!)
+                        // Apply a uniform addition to preserve the color ratios (keeps nights blue!)
                         if (currentBrightness < targetBrightness) {
                             float boost = targetBrightness - currentBrightness;
                             r += boost;
