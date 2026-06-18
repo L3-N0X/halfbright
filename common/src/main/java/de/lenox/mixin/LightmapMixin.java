@@ -32,7 +32,7 @@ public class LightmapMixin {
         if (renderState.needsUpdate) {
             CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
 
-            float brightness = 0.5f;
+            float brightness = 1.0f;
 
             // 1. Maintain UBO update so other subsystems stay happy
             try (GpuBuffer.MappedView view = commandEncoder.mapBuffer(this.ubo.currentBuffer(), false, true)) {
@@ -55,17 +55,13 @@ public class LightmapMixin {
             float minLevel = HalfbrightConfig.INSTANCE.getEnabled() ? HalfbrightConfig.INSTANCE.getMinLightLevel() / 15.0f : 0.0f;
 
             for (int y = 0; y < 16; y++) {
+                // Keep vanilla unextended sky level logic
                 float skyLevel = y / 15.0f;
-                if (HalfbrightConfig.INSTANCE.getEnabled()) {
-                    skyLevel = minLevel + (1.0f - minLevel) * skyLevel;
-                }
                 float skyBrightness = halfbright$getBrightness(skyLevel) * renderState.skyFactor;
 
                 for (int x = 0; x < 16; x++) {
+                    // Keep vanilla unextended block level logic
                     float blockLevel = x / 15.0f;
-                    if (HalfbrightConfig.INSTANCE.getEnabled()) {
-                        blockLevel = minLevel + (1.0f - minLevel) * blockLevel;
-                    }
                     float blockBrightness = halfbright$getBrightness(blockLevel) * renderState.blockFactor;
 
                     // Calculate ambient color with or without night vision
@@ -77,12 +73,12 @@ public class LightmapMixin {
                     float g = Math.max(renderState.ambientColor.y(), nightVisionG);
                     float b = Math.max(renderState.ambientColor.z(), nightVisionB);
 
-                    // Add sky light
+                    // Add vanilla sky light
                     r += renderState.skyLightColor.x() * skyBrightness;
                     g += renderState.skyLightColor.y() * skyBrightness;
                     b += renderState.skyLightColor.z() * skyBrightness;
 
-                    // Add block light
+                    // Add vanilla block light
                     float mixFactor = 0.9f * halfbright$parabolicMixFactor(blockLevel);
                     float blockLightR = halfbright$lerp(renderState.blockLightTint.x(), 1.0f, mixFactor);
                     float blockLightG = halfbright$lerp(renderState.blockLightTint.y(), 1.0f, mixFactor);
@@ -91,6 +87,23 @@ public class LightmapMixin {
                     r += blockLightR * blockBrightness;
                     g += blockLightG * blockBrightness;
                     b += blockLightB * blockBrightness;
+
+                    // === FIX: Linear Slider combined with Uniform Color-Preserving Boost ===
+                    if (HalfbrightConfig.INSTANCE.getEnabled()) {
+                        // 1. Map the slider linearly to eliminate the dead-zone
+                        float targetBrightness = HalfbrightConfig.INSTANCE.getMinLightLevel() / 15.0f;
+
+                        // 2. Find the strongest channel to see how bright the pixel currently is
+                        float currentBrightness = Math.max(r, Math.max(g, b));
+
+                        // 3. Apply a uniform addition to preserve the color ratios (keeps nights blue!)
+                        if (currentBrightness < targetBrightness) {
+                            float boost = targetBrightness - currentBrightness;
+                            r += boost;
+                            g += boost;
+                            b += boost;
+                        }
+                    }
 
                     // Apply boss overlay darkening effect
                     r = halfbright$lerp(r, r * 0.7f, renderState.bossOverlayWorldDarkening);
