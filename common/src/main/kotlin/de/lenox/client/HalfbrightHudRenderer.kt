@@ -2,7 +2,7 @@ package de.lenox.client
 
 import de.lenox.HalfbrightConfig
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 
 object HalfbrightHudRenderer {
@@ -12,7 +12,7 @@ object HalfbrightHudRenderer {
         showUntil = System.currentTimeMillis() + 3000L
     }
 
-    fun render(graphics: GuiGraphicsExtractor) {
+    fun render(graphics: GuiGraphics) {
         val remaining = showUntil - System.currentTimeMillis()
         if (remaining <= 0) return
 
@@ -41,6 +41,6 @@ object HalfbrightHudRenderer {
         val x = (graphics.guiWidth() - width) / 2
         val y = graphics.guiHeight() - 80
 
-        graphics.text(font, component, x, y, 0xFFFFFFFF.toInt(), true)
+        graphics.drawString(font, component, x, y, 0xFFFFFFFF.toInt())
     }
 }

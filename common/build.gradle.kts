@@ -11,6 +11,7 @@ architectury {
 dependencies {
 	val minecraftVersion = providers.gradleProperty("minecraft_version").get()
 	minecraft("com.mojang:minecraft:$minecraftVersion")
+	mappings(loom.officialMojangMappings())
 
 	compileOnly("org.spongepowered:mixin:0.8.7")
 }

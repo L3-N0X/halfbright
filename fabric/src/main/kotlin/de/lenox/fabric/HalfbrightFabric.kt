@@ -8,9 +8,9 @@ object HalfbrightFabric : ModInitializer {
 	override fun onInitialize() {
 		Halfbright.init()
 
-		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.toggleKey)
-		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.increaseKey)
-		net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping(de.lenox.client.HalfbrightKeybinds.decreaseKey)
+		net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(de.lenox.client.HalfbrightKeybinds.toggleKey)
+		net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(de.lenox.client.HalfbrightKeybinds.increaseKey)
+		net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(de.lenox.client.HalfbrightKeybinds.decreaseKey)
 
 		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
 			HalfbrightCommand.register(dispatcher)

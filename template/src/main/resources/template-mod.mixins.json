@@ -1,11 +1,9 @@
 {
 	"required": true,
-	"package": "de.lenox.mixin",
+	"package": "com.example.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"LightmapMixin",
-		"MinecraftMixin",
-		"GuiMixin"
+		"ExampleMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

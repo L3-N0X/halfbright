@@ -43,19 +43,19 @@ subprojects {
 	}
 
 	tasks.withType<JavaCompile>().configureEach {
-		options.release = 25
+		options.release = 21
 	}
 
 	afterEvaluate {
 		extensions.configure<KotlinJvmProjectExtension> {
 			compilerOptions {
-				jvmTarget.set(JvmTarget.JVM_25)
+				jvmTarget.set(JvmTarget.JVM_21)
 			}
 		}
 
 		extensions.configure<JavaPluginExtension> {
-			sourceCompatibility = JavaVersion.VERSION_25
-			targetCompatibility = JavaVersion.VERSION_25
+			sourceCompatibility = JavaVersion.VERSION_21
+			targetCompatibility = JavaVersion.VERSION_21
 		}
 	}
 }

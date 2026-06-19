@@ -28,14 +28,15 @@ dependencies {
 	val fabricApiVersion = providers.gradleProperty("fabric_api_version").get()
 
 	minecraft("com.mojang:minecraft:$minecraftVersion")
-	implementation("net.fabricmc:fabric-loader:$loaderVersion")
-	implementation("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
-	implementation("net.fabricmc:fabric-language-kotlin:$fabricKotlinVersion")
+	mappings(loom.officialMojangMappings())
+	modImplementation("net.fabricmc:fabric-loader:$loaderVersion")
+	modApi("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
+	modApi("net.fabricmc:fabric-language-kotlin:$fabricKotlinVersion")
 
-	implementation(project(":common"))
+	implementation(project(":common", configuration = "namedElements"))
 	add("shadowBundle", project(":common"))
 
-	compileOnly("net.caffeinemc:sodium-fabric-api:0.8.12+mc26.1.2")
+	modCompileOnly("net.caffeinemc:sodium-fabric-api:0.8.12+mc1.21.11")
 }
 
 tasks.processResources {
