@@ -85,5 +85,7 @@ publishMods {
 		projectId.set(providers.gradleProperty("curseforge_project_id").orElse("placeholder"))
 		accessToken.set(providers.environmentVariable("CURSEFORGE_TOKEN"))
 		minecraftVersions.add(providers.gradleProperty("minecraft_version").get())
+		clientRequired.set(true)
+		serverRequired.set(true)
 	}
 }
