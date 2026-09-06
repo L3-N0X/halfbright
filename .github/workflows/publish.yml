@@ -1,4 +1,4 @@
-# Automatically publish the mod to Modrinth when a new version tag is pushed.
+# Automatically publish the mod to Modrinth and CurseForge when a new version tag is pushed.
 name: publish
 on:
   push:
@@ -28,4 +28,5 @@ jobs:
         run: ./gradlew publishMods -Dorg.gradle.java.home="$JAVA_HOME"
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           CHANGELOG: "Release version ${{ github.ref_name }}"
