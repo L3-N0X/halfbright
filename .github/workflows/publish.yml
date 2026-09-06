@@ -25,7 +25,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: publish mods
-        run: ./gradlew publishMods -Dorg.gradle.java.home="$JAVA_HOME"
+        run: ./gradlew publishMods --continue -Dorg.gradle.java.home="$JAVA_HOME"
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
